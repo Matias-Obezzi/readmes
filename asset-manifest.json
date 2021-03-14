@@ -1,0 +1,18 @@
+{
+  "files": {
+    "main.css": "/readmes/static/css/main.7461b949.chunk.css",
+    "main.js": "/readmes/static/js/main.abceb3ad.chunk.js",
+    "runtime-main.js": "/readmes/static/js/runtime-main.11f1fefe.js",
+    "static/js/2.674cbcc8.chunk.js": "/readmes/static/js/2.674cbcc8.chunk.js",
+    "static/js/3.7f88d1ee.chunk.js": "/readmes/static/js/3.7f88d1ee.chunk.js",
+    "index.html": "/readmes/index.html",
+    "service-worker.js": "/readmes/service-worker.js",
+    "static/js/2.674cbcc8.chunk.js.LICENSE.txt": "/readmes/static/js/2.674cbcc8.chunk.js.LICENSE.txt"
+  },
+  "entrypoints": [
+    "static/js/runtime-main.11f1fefe.js",
+    "static/js/2.674cbcc8.chunk.js",
+    "static/css/main.7461b949.chunk.css",
+    "static/js/main.abceb3ad.chunk.js"
+  ]
+}
