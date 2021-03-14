@@ -1,6 +1,5 @@
 import { useState } from "react";
 import { useEffect } from "react";
-import { Link } from "react-router-dom";
 import styled from "styled-components";
 
 const StyledSideNav = styled.div`
@@ -66,7 +65,7 @@ const SideNav = ({links, focusOn}) => {
                 <StyledLink
                     key={index}
                     className={index === active ? 'active' : ''}
-                    onClick={() => focusOn(link)} key={link}
+                    onClick={() => focusOn(link)}
                 >
                     {link}
                 </StyledLink>

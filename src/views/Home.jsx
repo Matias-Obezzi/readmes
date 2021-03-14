@@ -17,6 +17,10 @@ const Home = (props) => {
             setReadmes(null)
             setError(err.message)
         })
+        document.title = "Readmes | Inicio"
+        return () => { 
+            document.title = "Readmes"
+        }
     }, [])
 
     return(

@@ -16,7 +16,7 @@ export const CardColumns = styled.div`
     border-radius: 10px;
     display: inline-block;
     padding: 10px;
-    width: 100%;
+    width: calc(100% - 20px);
     margin: 10px;
     height: 100%;
     transition: 0.5s all;

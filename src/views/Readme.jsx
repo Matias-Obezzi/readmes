@@ -8,6 +8,7 @@ import SideNav from '../components/SideNav'
 import * as apiService from '../apiService'
 import { useParams } from "react-router"
 import { useRef } from 'react'
+import Loading from '../components/Loading'
 
 const StyledReactMarkdown = styled(ReactMarkdown)`
     padding: 20px;
@@ -37,16 +38,22 @@ const Readme = (props) => {
             setMarkdown("")
             setError(err.message)
         })
+        document.title = "Readmes | " + name
+        return () => { 
+            document.title = "Readmes"
+        }
     }, [name])
 
     useEffect(() => {
-        const addId = (nodes) => {
-            nodes.forEach(el => {
-                el.setAttribute("id", el.innerText)
-            })
+        if(markdownRef.current) {
+            const addId = (nodes) => {
+                nodes.forEach(el => {
+                    el.setAttribute("id", el.innerText)
+                })
+            }
+            addId(markdownRef.current.querySelectorAll("h1"))
+            addId(markdownRef.current.querySelectorAll("h2"))
         }
-        addId(markdownRef.current.querySelectorAll("h1"))
-        addId(markdownRef.current.querySelectorAll("h2"))
     }, [markdownRef])
 
     const focusOn = (title) => {
@@ -66,26 +73,28 @@ const Readme = (props) => {
 
     return (
         <ContainerRow>
-            {error ? 
-                <>{error}</>
-                : <>
-                    <SideNav
-                        links={
-                            markdown.split("##")
-                                .map(el => el.split("\n")[0].trim())
-                                .map(el => el.replace("#", "").trim())
-                        }
-                        focusOn={focusOn}
-                    />
-                    <Col id="markdown" ref={markdownRef}>
-                        <StyledReactMarkdown
-                            transformImageUri={(url) => apiService.getMediaLink(name, url)}
-                            transformLinkUri={(url) => apiService.getUrlLink(name, url)}
-                        >
-                            {markdown}
-                        </StyledReactMarkdown>
-                    </Col>
-                </>
+            {!error && !markdown ? 
+                <Loading/> :
+                error ?
+                    <>{error}</>
+                    : <>
+                        <SideNav
+                            links={
+                                markdown.split("##")
+                                    .map(el => el.split("\n")[0].trim())
+                                    .map(el => el.replace("#", "").trim())
+                            }
+                            focusOn={focusOn}
+                        />
+                        <Col id="markdown" ref={markdownRef}>
+                            <StyledReactMarkdown
+                                transformImageUri={(url) => apiService.getMediaLink(name, url)}
+                                transformLinkUri={(url) => apiService.getUrlLink(name, url)}
+                            >
+                                {markdown}
+                            </StyledReactMarkdown>
+                        </Col>
+                    </>
             }
         </ContainerRow>
     )

@@ -1,5 +1,6 @@
 import React from 'react';
 import { HashRouter } from 'react-router-dom';
+import Footer from './components/Footer';
 // import logo from './logo.svg';
 
 import MainNav from './components/Nav'
@@ -10,6 +11,7 @@ function App() {
     <HashRouter>
       <MainNav />
       <Router />
+      <Footer />
     </HashRouter>
   );
 }
