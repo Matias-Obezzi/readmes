@@ -10,9 +10,10 @@ const StyledNav = styled.div`
     padding: 0 10px;
 `,
 StyledTitle = styled.h1`
-
+    margin:auto;
 `,
 LinksContainer = styled.div`
+    position: absolute;
     display: flex;
     flex-direction: row;
     align-items: center;
@@ -53,18 +54,18 @@ const Nav = (props) => {
     const location = useLocation()
     return(
         <StyledNav>
+            {location.pathname.startsWith("/r") && (
+                <LinksContainer>
+                    <StyledLink to='/'>
+                        <i className="fas fa-arrow-left"></i>
+                    </StyledLink>
+                </LinksContainer>
+            )}
             <StyledTitle>
                 <StyledLink style={{width: 'auto', font:'unset'}} to='/'>
                     Readmes
                 </StyledLink>
             </StyledTitle>
-            {location.pathname.startsWith("/r") && (
-                <LinksContainer>
-                    <StyledLink to='/'>
-                        <i className="fas fa-home"></i>
-                    </StyledLink>
-                </LinksContainer>
-            )}
         </StyledNav>
     )
 }
