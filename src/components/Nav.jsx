@@ -1,7 +1,8 @@
-import { NavLink } from "react-router-dom";
+import { NavLink, useLocation } from "react-router-dom";
 import styled from "styled-components";
 
 const StyledNav = styled.div`
+    height: 50px;
     display: flex;
     flex-direction: row;
     justify-content: space-between;
@@ -49,7 +50,7 @@ StyledLink = styled(NavLink)`
 `
 
 const Nav = (props) => {
-
+    const location = useLocation()
     return(
         <StyledNav>
             <StyledTitle>
@@ -57,11 +58,13 @@ const Nav = (props) => {
                     Readmes
                 </StyledLink>
             </StyledTitle>
-            <LinksContainer>
-                <StyledLink to='/'>
-                    <i className="fas fa-home"></i>
-                </StyledLink>
-            </LinksContainer>
+            {location.pathname.startsWith("/r") && (
+                <LinksContainer>
+                    <StyledLink to='/'>
+                        <i className="fas fa-home"></i>
+                    </StyledLink>
+                </LinksContainer>
+            )}
         </StyledNav>
     )
 }

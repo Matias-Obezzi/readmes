@@ -88,6 +88,7 @@ const Readme = (props) => {
                         />
                         <Col id="markdown" ref={markdownRef}>
                             <StyledReactMarkdown
+                                skipHtml={true}
                                 transformImageUri={(url) => apiService.getMediaLink(name, url)}
                                 transformLinkUri={(url) => apiService.getUrlLink(name, url)}
                             >

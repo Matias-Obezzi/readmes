@@ -45,9 +45,9 @@ const SideNav = ({links, focusOn}) => {
     const [active, setActive] = useState(0),
         linkElements = [],
         scroll = () => {
-            let enterOnScreenIndex = [...linkElements].reverse().findIndex((link) => window.scrollY >= link.offsetTop )
-            let activeIndex = linkElements.length - 1 - enterOnScreenIndex
-            setActive(enterOnScreenIndex === -1 ? 0 : activeIndex)
+            let enterOnScreenIndex = [...linkElements].reverse().findIndex((link) => window.scrollY >= link.offsetTop)
+            let activeIndex = Math.max(linkElements.length - 2 - enterOnScreenIndex, 0)
+            setActive(activeIndex >= linkElements.length -1 ? 0 : activeIndex)
         }
         
     useEffect(() => {
