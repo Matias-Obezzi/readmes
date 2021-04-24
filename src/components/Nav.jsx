@@ -74,7 +74,7 @@ const Nav = ({toggleOpen}) => {
                     Readmes
                 </StyledLink>
             </StyledTitle>
-            {location.pathname.startsWith("/r") && (
+            {location.pathname.startsWith("/r") && window.innerWidth < 578 && (
                 <LinksContainer style={{right: 10}}>
                     <StyledLink as="button" onClick={toggleOpen}>
                         <i className="fas fa-bars"></i>
