@@ -11,7 +11,7 @@ function App() {
   return (
     <HashRouter>
       <MainNav open={openMenu} toggleOpen={() => setOpenMenu(!openMenu)} />
-      <div style={{minHeight: `calc(100vh - 50px - 110px - ${window.innerWidth < 578 ? '52px' : ''})`}}>
+      <div style={{minHeight: `calc(100vh - 50px - 110px - ${window.innerWidth < 578 ? '52px' : '0'})`}}>
         <Router open={openMenu} toggleOpen={() => setOpenMenu(!openMenu)} />
       </div>
       <Footer />
