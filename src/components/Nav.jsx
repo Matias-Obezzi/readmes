@@ -57,7 +57,7 @@ StyledLink = styled(NavLink)`
     }
 `
 
-const Nav = ({toggleOpen}) => {
+const Nav = ({open, toggleOpen}) => {
     const location = useLocation()
     
     return(
@@ -77,7 +77,7 @@ const Nav = ({toggleOpen}) => {
             {location.pathname.startsWith("/r") && window.innerWidth < 578 && (
                 <LinksContainer style={{right: 10}}>
                     <StyledLink as="button" onClick={toggleOpen}>
-                        <i className="fas fa-bars"></i>
+                        <i className={`fas ${open ? 'fa-times' : 'fa-bars'}`}></i>
                     </StyledLink>
                 </LinksContainer>
             )}
