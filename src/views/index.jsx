@@ -7,10 +7,10 @@ const Router = (props) => {
     return(
         <Switch>
             <Route exact path="/">
-                <Home />
+                <Home {...props} />
             </Route>
             <Route path="/r/:name">
-                <Readme />
+                <Readme {...props} />
             </Route>
         </Switch>
     )

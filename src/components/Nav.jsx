@@ -8,6 +8,12 @@ const StyledNav = styled.div`
     justify-content: space-between;
     align-items: center;
     padding: 0 10px;
+    width: 100%;
+    @media(max-width:750px){
+        backdrop-filter: blur(1rem);
+        position: sticky;
+        top:0;
+    }
 `,
 StyledTitle = styled.h1`
     margin:auto;
@@ -33,6 +39,7 @@ StyledLink = styled(NavLink)`
     font-size: 25px;
     text-decoration: none;
     font-weight: bold;
+    border: 0;
     & i{
         & , &::before{
             display: flex;
@@ -50,8 +57,9 @@ StyledLink = styled(NavLink)`
     }
 `
 
-const Nav = (props) => {
+const Nav = ({toggleOpen}) => {
     const location = useLocation()
+    
     return(
         <StyledNav>
             {location.pathname.startsWith("/r") && (
@@ -66,6 +74,13 @@ const Nav = (props) => {
                     Readmes
                 </StyledLink>
             </StyledTitle>
+            {location.pathname.startsWith("/r") && (
+                <LinksContainer style={{right: 10}}>
+                    <StyledLink as="button" onClick={toggleOpen}>
+                        <i className="fas fa-bars"></i>
+                    </StyledLink>
+                </LinksContainer>
+            )}
         </StyledNav>
     )
 }

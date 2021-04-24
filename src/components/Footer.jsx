@@ -1,4 +1,4 @@
-import styled from "styled-components";
+import styled, { keyframes } from "styled-components";
 import { Col, ContainerRow } from "../styled/Container"
 
 const StyledFooter = styled(ContainerRow)`
@@ -47,7 +47,22 @@ SocialLink = styled.a`
         transform: scale(0.9);
     }
 `,
+beat = keyframes`
+    0%{
+        transform: scale(1);
+    }
+    50%{
+        transform: scale(0.95);
+    }
+    100%{
+        transform: scale(1);
+    }
+`,
 PageInfo = styled(Col)`
+    .heart{
+        color: red;
+        animation: ${beat} infinite 1s linear;
+    }
     @media(max-width: 576px){
         flex-direction: column;
         justify-content: center;
@@ -84,7 +99,7 @@ const Footer = () => {
         <StyledFooter>
             <PageInfo style={{justifyContent: 'center'}}>
                 <b>Readmes</b>
-                <p>Made with <i className="fas fa-heart" /> by Matias Obezzi</p>
+                <p>Made with <i className="fas fa-heart heart" /> by Matias Obezzi</p>
             </PageInfo>
             <Col>
                 <SocialLinksContainer>

@@ -22,11 +22,21 @@ const StyledReactMarkdown = styled(ReactMarkdown)`
         max-width: 100%;
         border-radius: 5px;
     }
+`,
+Container = styled.div`
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    @media(max-width: 576px){
+        width: unset;
+        flex-direction: column;
+    }
 `
 
-const Readme = (props) => {
+const Readme = ({open, toggleOpen}) => {
     const [markdown, setMarkdown] = useState(""),
         [error, setError] = useState(""),
+        [links, setLinks] = useState([]),
         markdownRef = useRef(),
         {name} = useParams()
 
@@ -48,22 +58,27 @@ const Readme = (props) => {
         if(markdownRef.current) {
             const addId = (nodes) => {
                 nodes.forEach(el => {
-                    el.setAttribute("id", el.innerText)
+                    setLinks(l => l.concat(el.innerText));
                 })
             }
             addId(markdownRef.current.querySelectorAll("h1"))
             addId(markdownRef.current.querySelectorAll("h2"))
         }
-    }, [markdownRef])
+    }, [markdown])
+
+    const scrollTo = (el) => (
+        window.scroll({
+            top: el.offsetTop - document.body.scrollTop - (window.innerWidth < 578 ? 50 : 0),
+            behavior: 'smooth'
+        })
+    )
 
     const focusOn = (title) => {
+        toggleOpen()
         const evaluateNodes = (nodes) => {
             nodes.forEach(el => {
                 if(el.innerText === title) {
-                    window.scroll({
-                        top: el.offsetTop - document.body.scrollTop,
-                        behavior: 'smooth'
-                    })
+                    scrollTo(el);
                 }
             })
         }
@@ -77,25 +92,22 @@ const Readme = (props) => {
                 <Loading/> :
                 error ?
                     <>{error}</>
-                    : <>
+                    : <Container>
                         <SideNav
-                            links={
-                                markdown.split("##")
-                                    .map(el => el.split("\n")[0].trim())
-                                    .map(el => el.replace("#", "").trim())
-                            }
+                            links={links}
                             focusOn={focusOn}
+                            open={open}
+                            toggleOpen={toggleOpen}
                         />
                         <Col id="markdown" ref={markdownRef}>
                             <StyledReactMarkdown
-                                skipHtml={true}
                                 transformImageUri={(url) => apiService.getMediaLink(name, url)}
                                 transformLinkUri={(url) => apiService.getUrlLink(name, url)}
                             >
                                 {markdown}
                             </StyledReactMarkdown>
                         </Col>
-                    </>
+                    </Container>
             }
         </ContainerRow>
     )
