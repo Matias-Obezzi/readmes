@@ -32,8 +32,8 @@ StyledLink = styled(NavLink)`
     padding: 5px;
     box-sizing: content-box;
     border-radius: 5px;
-    background: ${({background = 'transparent'}) => background};
-    color: ${({color = 'black'}) => color};
+    background: transparent;
+    color: #24292e;
     cursor: pointer;
     transition: 0.3s all;
     font-size: 25px;

@@ -70,13 +70,10 @@ SideNavButtonsContainer = styled(SideNavContainer)`
     overflow: hidden;
 `,
 StyledLink = styled.button`
-    white-space: normal;
-    overflow: hidden;
-    white-space: nowrap;
-    text-overflow: ellipsis;
     text-decoration: none;
     width: 100%;
     background: transparent;
+    color: unset;
     outline: 0;
     border: 0;
     padding: 5px 10px;
@@ -98,7 +95,8 @@ StyledButton = styled.button`
     max-height: 50px;
     border: 0;
     border-radius: 5px;
-    background: white;
+    background: unset;
+    color: unset;
     outline: 0;
     font: unset;
     padding: 5px;
@@ -109,7 +107,6 @@ StyledButton = styled.button`
     margin-right:2px;
     transition: 0.2s all;
     text-decoration: none;
-    color: black;
     text-align:center;
     i, span{
         padding: 2px;
@@ -162,7 +159,7 @@ const SideNav = ({links, focusOn, open, toggleOpen}) => {
                     <StyledLink
                         key={index}
                         className={index === active ? 'active' : ''}
-                        onClick={() => focusOn(link)}
+                        onClick={() => {focusOn(link);setActive(index); }}
                     >
                         {link}
                     </StyledLink>

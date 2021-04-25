@@ -22,7 +22,7 @@ export const CardColumns = styled.div`
     transition: 0.5s all;
     z-index: 1;
     text-decoration: none;
-    color: rgb(20,20,20);
+    color: #24292e;
     &:hover, &:focus{
         outline: 0;
         transform: translateY(-5px);
