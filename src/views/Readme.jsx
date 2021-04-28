@@ -46,7 +46,7 @@ const Readme = ({open, toggleOpen}) => {
 
     const scrollTo = (el) => (
         window.scroll({
-            top: el.offsetTop - document.body.scrollTop - (window.innerWidth < 578 ? 50 : 0),
+            top: el.offsetTop - document.body.scrollTop - (window.innerWidth < 578 ? 50 : 10),
             behavior: 'smooth'
         })
     )
@@ -77,7 +77,7 @@ const Readme = ({open, toggleOpen}) => {
                             open={open}
                             toggleOpen={toggleOpen}
                         />
-                        <Col id="markdown" ref={markdownRef}>
+                        <Col style={{padding: 0}} id="markdown" ref={markdownRef}>
                             <StyledReactMarkdown
                                 transformImageUri={(url) => apiService.getMediaLink(name, url)}
                                 transformLinkUri={(url) => apiService.getUrlLink(name, url)}
@@ -96,11 +96,11 @@ export default Readme;
 
 
 const Container = styled.div`
+    width: 100%;
     display: flex;
     flex-direction: row;
     justify-content: center;
     @media(max-width: 576px){
-        width: unset;
         flex-direction: column;
     }
 `,
@@ -108,10 +108,14 @@ StyledReactMarkdown = styled(ReactMarkdown)`
     padding: 20px;
     border-radius: 10px;
     background: white;
-    width: 100%;
+    width: auto;
     display: flex;
     flex-direction: column;
     box-shadow: 0px 5px 10px rgba(0,0,0,0.2);
+    
+    @media(min-width: 578px){
+        margin-left: 10px;
+    }
 
     h1 {
         font-size: 28px;
@@ -140,7 +144,6 @@ StyledReactMarkdown = styled(ReactMarkdown)`
         font-size: 14px;
     }
     h1, h2, h3, h4, h5, h6{
-        margin-top: 24px;
         margin-bottom: 16px;
     }
     p, blockquote, ul, ol, dl, li, table, pre {
