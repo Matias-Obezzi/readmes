@@ -1,22 +1,56 @@
 import React, { useEffect, useState } from 'react';
-import { HashRouter, useLocation } from 'react-router-dom';
+import { HashRouter } from 'react-router-dom';
 import Footer from './components/Footer';
-// import logo from './logo.svg';
 
-import MainNav from './components/Nav'
+import SideNav from './components/SideNav';
 import Router from './views'
 
+import Context from './context';
+
+import * as apiService from './apiService';
+import { Container, ContainerRow } from './styled/Container';
+
 function App() {
-  const [openMenu, setOpenMenu] = useState(false)
+  const [readmes, setReadmes] = useState([]),
+    [error, setError] = useState("");
+  
+  useEffect(() => {
+    apiService.getReadmes().then(res => {
+        setReadmes(res)
+        setError("")
+    }).catch(err =>{
+        setReadmes(null)
+        setError(err.message)
+    })
+    document.title = "Readmes | Inicio"
+    return () => { 
+        document.title = "Readmes"
+    }
+}, [])
+
+  const value = {
+    readmes,
+    setReadmes 
+  }
 
   return (
-    <HashRouter>
-      <MainNav open={openMenu} toggleOpen={(state = !openMenu) => window.innerWidth < 578 && setOpenMenu(state)} />
-      <div style={{minHeight: `calc(100vh - 50px - 110px ${window.innerWidth < 578 ? '- 52px' : ''})`}}>
-        <Router open={openMenu} toggleOpen={(state = !openMenu) => window.innerWidth < 578 && setOpenMenu(state)} />
-      </div>
-      <Footer />
-    </HashRouter>
+    <Context.Provider value={value}>
+      <HashRouter>
+        <ContainerRow>
+          <SideNav />
+          <Container>
+            <div style={{minHeight: `calc(100vh - 110px ${window.innerWidth < 578 ? '- 52px' : ''})`}}>
+              {error
+                ? <p>
+                  {error}
+                </p>
+                : <Router />}
+            </div>
+            <Footer />
+          </Container>
+        </ContainerRow>
+      </HashRouter>
+    </Context.Provider>
   );
 }
 

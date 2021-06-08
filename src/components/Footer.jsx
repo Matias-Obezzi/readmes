@@ -1,8 +1,53 @@
 import styled, { keyframes } from "styled-components";
 import { Col, ContainerRow } from "../styled/Container"
 
+const Footer = () => {
+    const socialLinks = [
+        {
+            icon: 'fab fa-linkedin-in',
+            href: 'https://linkedin.com/in/Matias-Obezzi',
+            color: 'white',
+            background: '#0e76a8',
+            title: 'LinkedIn - Matias Obezzi'
+        },
+        {
+            icon: 'fab fa-github',
+            href: 'https://github.com/Matias-Obezzi',
+            color: '#f6f8fa',
+            background: '#24292e',
+            title: 'LinkedIn - Matias Obezzi'
+        },
+        {
+            icon: 'fas fa-globe-americas',
+            href: 'https://matias-obezzi.github.io',
+            color: 'white',
+            background: '#bf1736',
+            title: 'Web Personal - Matias Obezzi'
+        },
+    ]
+    return(
+        <StyledFooter>
+            <PageInfo style={{justifyContent: 'center'}}>
+                <b>Readmes</b>
+                <p>Made with <i className="fas fa-heart heart" /> by Matias Obezzi</p>
+            </PageInfo>
+            <Col>
+                <SocialLinksContainer>
+                    {socialLinks.map(link => (
+                        <SocialLink href={link.href} target="_blank" background={link.background} color={link.color} title={link.title} key={link.href}>
+                            <i className={link.icon}></i>
+                        </SocialLink>
+                    ))}
+                </SocialLinksContainer>
+            </Col>
+        </StyledFooter>
+       )
+}
+
+export default Footer;
+
 const StyledFooter = styled(ContainerRow)`
-    margin-top: 20px;
+    display: flex;
     padding: 20px 10px 20px 10px;
     @media(max-width: 576px){
         flex-direction: column;
@@ -64,54 +109,9 @@ PageInfo = styled(Col)`
         animation: ${beat} infinite 1s linear;
     }
     @media(max-width: 576px){
-        flex-direction: column;
+        flex-direction: row;
         justify-content: center;
         text-align: center;
         margin-bottom: 10px;
     }
 `
-
-const Footer = () => {
-    const socialLinks = [
-        {
-            icon: 'fab fa-linkedin-in',
-            href: 'https://linkedin.com/in/Matias-Obezzi',
-            color: 'white',
-            background: '#0e76a8',
-            title: 'LinkedIn - Matias Obezzi'
-        },
-        {
-            icon: 'fab fa-github',
-            href: 'https://github.com/Matias-Obezzi',
-            color: '#f6f8fa',
-            background: '#24292e',
-            title: 'LinkedIn - Matias Obezzi'
-        },
-        {
-            icon: 'fas fa-globe-americas',
-            href: 'https://matias-obezzi.github.io',
-            color: 'white',
-            background: '#bf1736',
-            title: 'Web Personal - Matias Obezzi'
-        },
-    ]
-    return(
-        <StyledFooter>
-            <PageInfo style={{justifyContent: 'center'}}>
-                <b>Readmes</b>
-                <p>Made with <i className="fas fa-heart heart" /> by Matias Obezzi</p>
-            </PageInfo>
-            <Col>
-                <SocialLinksContainer>
-                    {socialLinks.map(link => (
-                        <SocialLink href={link.href} target="_blank" background={link.background} color={link.color} title={link.title} key={link.href}>
-                            <i className={link.icon}></i>
-                        </SocialLink>
-                    ))}
-                </SocialLinksContainer>
-            </Col>
-        </StyledFooter>
-       )
-}
-
-export default Footer;

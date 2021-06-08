@@ -21,13 +21,18 @@ const getFromRepo = async (path, queryParams = {}) => {
 }
 
 export const getReadmes = async () => {
-    return await getFromRepo("contents")
+    let readmes = JSON.parse(sessionStorage.getItem("readmes"));
+    if(!readmes) {
+        readmes = await getFromRepo("contents");
+        sessionStorage.setItem("readmes", JSON.stringify(readmes));
+    }
+    return readmes;
 }
 
-export const getReadme = async (dirName) => {
+export const getReadme = async (dirName, readme = "readme") => {
     if(!dirName)
         throw new Error("Se necesita el nombre de la carpete")
-    return await fetch(`https://raw.githubusercontent.com/Matias-Obezzi/readmes/readmes/${dirName}/readme.md`)
+    return await fetch(`https://raw.githubusercontent.com/Matias-Obezzi/readmes/readmes/${dirName}/${readme}.md`)
 }
 
 export const getMediaLink = (dirName, mediaName) => {

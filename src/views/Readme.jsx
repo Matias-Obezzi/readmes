@@ -1,21 +1,18 @@
 import ReactMarkdown from 'react-markdown'
-import { useEffect, useState } from "react"
+import { useEffect, useRef, useState } from "react"
 import styled from 'styled-components'
 
-import { Col, ContainerRow } from '../styled/Container'
-import SideNav from '../components/SideNav'
+import { Container, ContainerRow } from '../styled/Container'
 
 import * as apiService from '../apiService'
 import { useParams } from "react-router"
-import { useRef } from 'react'
 import Loading from '../components/Loading'
 
-const Readme = ({open, toggleOpen}) => {
+const Readme = () => {
     const [markdown, setMarkdown] = useState(""),
         [error, setError] = useState(""),
-        [links, setLinks] = useState([]),
         markdownRef = useRef(),
-        {name} = useParams()
+        {name} = useParams();
 
     useEffect(() => {
         apiService.getReadme(name).then(res => {
@@ -31,6 +28,61 @@ const Readme = ({open, toggleOpen}) => {
         }
     }, [name])
 
+    const focusOn = (title) => {
+        const scrollTo = (el) => (
+            window.scroll({
+                top: el.offsetTop - document.body.scrollTop - 84,
+                behavior: 'smooth'
+            })
+        )
+        
+        const evaluateNodes = (nodes) => {
+            nodes.forEach(el => {
+                if(el.innerText === title) {
+                    scrollTo(el);
+                }
+            })
+        }
+
+        evaluateNodes(markdownRef.current.querySelectorAll("h1"));
+        evaluateNodes(markdownRef.current.querySelectorAll("h2"));
+    }
+
+    return (
+        <Container>
+            {/* <LinkNavigator markdown={markdown} markdownRef={markdownRef} focusOn={focusOn} /> */}
+            <StyledReactMarkdownContainer ref={markdownRef}>
+                {!error && !markdown ? 
+                    <Loading/> :
+                    error ?
+                        <p>{error}</p> :
+                            <StyledReactMarkdown
+                                transformImageUri={(url) => apiService.getMediaLink(name, url)}
+                                transformLinkUri={(url) => apiService.getUrlLink(name, url)}
+                            >
+                                
+                                        {markdown}
+                            </StyledReactMarkdown>
+                }
+            </StyledReactMarkdownContainer>
+        </Container>
+    )
+}
+
+
+export default Readme;
+
+const LinkNavigator = ({markdown, markdownRef, focusOn}) => {
+    const [links, setLinks] = useState([]),
+        [active, setActive] = useState(null),
+        linkElements = []
+    
+    const scroll = () => {
+        let enterOnScreenIndex = [...linkElements].reverse().findIndex((link) => window.scrollY + (window.innerWidth < 578 ? 50 : 10) >= link.offsetTop)
+        let activeIndex = Math.max(linkElements.length - 2 - enterOnScreenIndex, 0)
+        setActive(activeIndex >= linkElements.length -1 ? 0 : activeIndex)
+    }
+
     useEffect(() => {
         if(markdownRef.current) {
             setLinks([])
@@ -42,80 +94,41 @@ const Readme = ({open, toggleOpen}) => {
             addId(markdownRef.current.querySelectorAll("h1"))
             addId(markdownRef.current.querySelectorAll("h2"))
         }
-    }, [markdown])
+    }, [markdown, markdownRef])
 
-    const scrollTo = (el) => (
-        window.scroll({
-            top: el.offsetTop - document.body.scrollTop - (window.innerWidth < 578 ? 50 : 10),
-            behavior: 'smooth'
-        })
-    )
-
-    const focusOn = (title) => {
-        toggleOpen()
-        const evaluateNodes = (nodes) => {
-            nodes.forEach(el => {
-                if(el.innerText === title) {
-                    scrollTo(el);
-                }
-            })
+    useEffect(() => {
+        window.addEventListener('scroll', scroll)
+        return () => {
+            window.removeEventListener('scroll', scroll)
         }
-        evaluateNodes(markdownRef.current.querySelectorAll("h1"));
-        evaluateNodes(markdownRef.current.querySelectorAll("h2"));
-    }
+    })
 
-    return (
-        <ContainerRow>
-            {!error && !markdown ? 
-                <Loading/> :
-                error ?
-                    <>{error}</>
-                    : <Container>
-                        <SideNav
-                            links={links}
-                            focusOn={focusOn}
-                            open={open}
-                            toggleOpen={toggleOpen}
-                        />
-                        <Col style={{padding: 0}} id="markdown" ref={markdownRef}>
-                            <StyledReactMarkdown
-                                transformImageUri={(url) => apiService.getMediaLink(name, url)}
-                                transformLinkUri={(url) => apiService.getUrlLink(name, url)}
-                            >
-                                {markdown}
-                            </StyledReactMarkdown>
-                        </Col>
-                    </Container>
-            }
-        </ContainerRow>
+    return(
+        <LinksCarrouselContainer>
+            <LinksCarrousel>
+                {
+                    links?.concat(links).map((link, index) => (
+                        <StyledLink onClick={() => focusOn(link)} key={index} active={index === active}>
+                            {link}
+                        </StyledLink>
+                    ))
+                }
+            </LinksCarrousel>
+        </LinksCarrouselContainer>
     )
 }
 
-
-export default Readme;
-
-
-const Container = styled.div`
-    width: 100%;
-    display: flex;
-    flex-direction: row;
-    justify-content: center;
-    @media(max-width: 576px){
-        flex-direction: column;
-    }
+const StyledReactMarkdownContainer = styled(Container)`
+    min-height: calc(100vh - 90px);
+    /* padding: 0 50px 20px 50px; */
+    padding: 20px 50px;
+    box-shadow: 0px 1px 1px rgba(0,0,0,0.2);
 `,
 StyledReactMarkdown = styled(ReactMarkdown)`
-    padding: 20px;
-    border-radius: 10px;
-    background: white;
-    width: auto;
+    width: 100%;
+    height: 100%;
     display: flex;
     flex-direction: column;
-    box-shadow: 0px 5px 10px rgba(0,0,0,0.2);
-    
-    @media(min-width: 578px){
-        margin-left: 10px;
-    }
 
     h1 {
         font-size: 28px;
@@ -164,6 +177,7 @@ StyledReactMarkdown = styled(ReactMarkdown)`
         background: #f0f0f0;
         border-radius: 5px;
         color: #0f0f0f;
+        word-break: break-word;
     }
     a{
         color: #0366d6;
@@ -174,5 +188,78 @@ StyledReactMarkdown = styled(ReactMarkdown)`
     }
     :first-child{
         margin-top: 0;
+    }
+`,
+LinksCarrouselContainer = styled(Container)`
+    margin: 0 50px;
+    padding: 20px 0px 20px 0;
+    background: white;
+    position: sticky;
+    top:0px;
+    width: calc(100% - 100px);
+`,
+LinksCarrousel = styled(ContainerRow)`
+    width: 100%;
+    flex-wrap: nowrap;
+    flex-direction: row-reverse;
+    overflow: auto;
+    padding-bottom: 5px;
+    transform: rotate(180deg);
+
+    :last-child{
+       margin: 0;
+    }
+
+    ::-webkit-scrollbar,
+    ::-webkit-scrollbar-thumb,
+    ::-webkit-scrollbar-corner {
+        border-radius: 5px;
+        border-right-style: inset;
+        border-right-width: calc(100vw + 100vh);
+        border-color: inherit;
+    }
+
+    ::-webkit-scrollbar {
+        width: 0.5rem;
+        height: 0.5rem;
+    }
+
+    ::-webkit-scrollbar-thumb {
+        border-color: inherit;
+    }
+    ::-webkit-scrollbar-track-piece {
+        background: white;
+    }
+`,
+StyledLink = styled.button`
+    transform: rotate(180deg);
+    text-decoration: none;
+    min-width: 30%;
+    background: ${({active}) => active ? 'rgba(0,0,255,0.8)' : 'transparent '};
+    color: ${({active}) => active ? 'white' : 'unset '};
+    outline: 0;
+    border: 0;
+    padding: 5px 10px;
+    margin-right: 10px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: 0.2s all;
+    box-sizing: border-box;
+    max-height: 50px;
+    font: unset;
+    text-align:center;
+    &:hover{
+        background: rgba(0,0,255,0.8);
+        color: white;
+    }
+    &:focus{
+        outline:0;
+    }
+    &:hover, &.active{
+        background: rgba(0,0,255,0.8);
+        color: white;
+    }
+    :last-child{
+        margin-right: 0;
     }
 `

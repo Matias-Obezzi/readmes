@@ -1,57 +1,67 @@
-import { useState } from "react";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
+import { Link, NavLink, useHistory, useParams } from "react-router-dom";
 import styled from "styled-components";
+import Context from "../context";
+import { Container } from "../styled/Container";
 
-const SideNav = ({links, focusOn, open, toggleOpen}) => {
-    const [active, setActive] = useState(0),
-        linkElements = [],
-        scroll = () => {
-            let enterOnScreenIndex = [...linkElements].reverse().findIndex((link) => window.scrollY + (window.innerWidth < 578 ? 50 : 10) >= link.offsetTop)
-            let activeIndex = Math.max(linkElements.length - 2 - enterOnScreenIndex, 0)
-            setActive(activeIndex >= linkElements.length -1 ? 0 : activeIndex)
-        }
-        
+const SideNav = () => {
+    const {name} = useParams(),
+        history = useHistory(),
+        [open, setOpen] = useState(window.innerWidth < 578);
+
     const scrollTop = () => {
-        toggleOpen();
         window.scroll({
             top: document.querySelector('body').offsetTop - document.body.scrollTop,
             behavior: 'smooth'
         })
     }
 
+    const toggleOpen = (state = !open) => setOpen(state);
+
     useEffect(() => {
-        document.querySelectorAll("h1").forEach(el => linkElements.push(el))
-        document.querySelectorAll("h2").forEach(el => linkElements.push(el))
-        window.addEventListener('scroll', scroll)
-        return () => {
-            window.removeEventListener('scroll', scroll)
-        }
-    })
+        setOpen(false);
+    }, [history.location])
 
     return (
-        <StyledSideNav open={open}>
-            <SideNavContainer>
-                {links.map((link, index) => (
-                    <StyledLink
-                        key={index}
-                        className={index === active ? 'active' : ''}
-                        onClick={() => focusOn(link)}
-                    >
-                        {link}
-                    </StyledLink>
-                ))}
-            </SideNavContainer>
-            <SideNavButtonsContainer>
-                <StyledButton as="a" href="https://github.com/Matias-Obezzi/readmes" target="_blank">
-                    <i className="far fa-star"></i>
-                    <span>Star</span>
-                </StyledButton>
-                <StyledButton onClick={scrollTop}>
-                    <i className="fas fa-arrow-up"></i>
-                    <span>Top</span>
-                </StyledButton>
-            </SideNavButtonsContainer>
-        </StyledSideNav>
+        <Context.Consumer>
+            {({readmes}) => (
+                <>
+                    <StyledSideNav open={open}>
+                        <Container style={{margin: 0}}>
+                            <Brand as={Link} to={'/'}>
+                                <img src={`${process.env.PUBLIC_URL}/logo512.png`} alt="Readmes Icon" height="30" />
+                                <h1 style={{fontSize: '25px', marginLeft: 5}}>Readmes</h1>
+                            </Brand>
+                            <SideNavContainer>
+                                {readmes?.map((link, index) => (
+                                    <StyledLink
+                                        key={index}
+                                        className={name === link.name ? 'active' : ''}
+                                        to={`/r/${link.name}`}
+                                    >
+                                        {link.name}
+                                    </StyledLink>
+                                ))}
+                            </SideNavContainer>
+                        </Container>
+                        <SideNavButtonsContainer>
+                            <StyledButton as="a" href="https://github.com/Matias-Obezzi/readmes" target="_blank">
+                                <i className="far fa-star"></i>
+                                <span>Star</span>
+                            </StyledButton>
+                            <StyledButton onClick={scrollTop}>
+                                <i className="fas fa-arrow-up"></i>
+                                <span>Top</span>
+                            </StyledButton>
+                        </SideNavButtonsContainer>
+                    </StyledSideNav>
+                    <MenuButton onClick={() => toggleOpen()}>
+                        <i className="fas fa-bars"></i>
+                        {open}
+                    </MenuButton>
+                </>
+            )}
+        </Context.Consumer>
     )
 }
 
@@ -60,31 +70,25 @@ export default SideNav;
 const StyledSideNav = styled.div`
     display: flex;
     flex-direction: column;
+    justify-content: space-between;
     position: sticky;
-    top: 10px;
+    top: 0;
     left: 0;
-    height: fit-content;
-    background: white;
+    height: 100vh;
+    background: rgb(245, 245, 245);
     min-width: 15vw;
     max-width: 20vw;
-    box-shadow: 0px 5px 10px rgba(0,0,0,0.2);
-    border-radius: 5px;
+    /* box-shadow: 0px 5px 10px rgba(0,0,0,0.2); */
     overflow: hidden;
     transition: 0.5s all;
     max-height: 100vh;
     padding: 10px;
     z-index: 2;
     @media(max-width: 576px){
-        min-width: unset;
-        max-width: unset;
-        top: 60px;
         position: fixed;
-        width: calc(100% - 71px);
-        margin-left: 35px;
-        margin-right: 35px;
-        max-height: ${({open}) => open ? '100vh' : '0'};
-        padding: ${({open}) => open ? '10px' : '0'} 10px;
-        div {
+        max-width: 80vw;
+        transform: translateX(${({open}) => open ? '0' : '-100%'});
+        body {
             overflow: ${({open}) => open ? 'auto' : 'hidden'};;
         }
     }
@@ -94,12 +98,16 @@ SideNavContainer = styled.div`
     flex-direction: column;
     position: sticky;
     height: fit-content;
-    padding: 10px;
-    max-height: calc(100vh - 50px - 20px - 10px);
+    padding: 0px 10px 0 0;
+    margin: 5px 0;
     overflow-x: hidden;
     border-color: rgba(0, 0, 0, 0);
     transition: border-color 0.5s linear;
     border-color: rgba(0, 0, 0, 0.2);
+
+    :last-child{
+       margin: 0;
+    }
 
     ::-webkit-scrollbar,
     ::-webkit-scrollbar-thumb,
@@ -122,13 +130,7 @@ SideNavContainer = styled.div`
         background: white;
     }
 `,
-SideNavButtonsContainer = styled(SideNavContainer)`
-    max-height: unset;
-    padding-top: 0;
-    flex-direction: row;
-    overflow: hidden;
-`,
-StyledLink = styled.button`
+StyledLink = styled(NavLink)`
     text-decoration: none;
     width: 100%;
     background: transparent;
@@ -136,9 +138,8 @@ StyledLink = styled.button`
     outline: 0;
     border: 0;
     padding: 5px 10px;
+    margin-bottom: 5px;
     border-radius: 5px;
-    margin: 2.5px 0;
-    text-align: right;
     cursor: pointer;
     transition: 0.2s all;
     box-sizing: border-box;
@@ -149,6 +150,15 @@ StyledLink = styled.button`
         background: rgba(0,0,255,0.8);
         color: white;
     }
+    :last-child{
+        margin-bottom: 0;
+    }
+`,
+SideNavButtonsContainer = styled(SideNavContainer)`
+    min-height: 50px;
+    flex-direction: row;
+    overflow: hidden;
+    padding: 0;
 `,
 StyledButton = styled.button`
     max-height: 50px;
@@ -160,7 +170,7 @@ StyledButton = styled.button`
     font: unset;
     padding: 5px;
     cursor: pointer;
-    width: 100%;
+    width: 95%;
     margin: auto;
     margin-left:2px;
     margin-right:2px;
@@ -182,5 +192,35 @@ StyledButton = styled.button`
         span{
             display: none;
         }
+    }
+`,
+Brand = styled(StyledButton)`
+    align-items: center;
+    display: flex;
+    width: 100%;
+    margin: 0;
+    &:hover{
+        background: unset;
+        color: unset;
+    }
+`,
+MenuButton = styled.button`
+    display: none;
+    border: 0;
+    outline: 0;
+    background: transparent;
+    color: black;
+    position: fixed;
+    right: 20px;
+    top:20px;
+    font-size: 25px;
+    cursor: pointer;
+    border-radius: 50%;
+    height: 30px;
+    width: 30px;
+    align-items: center;
+    justify-content: center;
+    @media(max-width: 578px){
+        display: flex;
     }
 `
