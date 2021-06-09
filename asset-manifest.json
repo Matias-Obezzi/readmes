@@ -1,18 +1,18 @@
 {
   "files": {
     "main.css": "/readmes/static/css/main.6221c9d5.chunk.css",
-    "main.js": "/readmes/static/js/main.a5b80d61.chunk.js",
+    "main.js": "/readmes/static/js/main.bab289ea.chunk.js",
     "runtime-main.js": "/readmes/static/js/runtime-main.dc9eb953.js",
-    "static/js/2.79d49fd2.chunk.js": "/readmes/static/js/2.79d49fd2.chunk.js",
+    "static/js/2.dd47b179.chunk.js": "/readmes/static/js/2.dd47b179.chunk.js",
     "static/js/3.856769b4.chunk.js": "/readmes/static/js/3.856769b4.chunk.js",
     "index.html": "/readmes/index.html",
     "service-worker.js": "/readmes/service-worker.js",
-    "static/js/2.79d49fd2.chunk.js.LICENSE.txt": "/readmes/static/js/2.79d49fd2.chunk.js.LICENSE.txt"
+    "static/js/2.dd47b179.chunk.js.LICENSE.txt": "/readmes/static/js/2.dd47b179.chunk.js.LICENSE.txt"
   },
   "entrypoints": [
     "static/js/runtime-main.dc9eb953.js",
-    "static/js/2.79d49fd2.chunk.js",
+    "static/js/2.dd47b179.chunk.js",
     "static/css/main.6221c9d5.chunk.css",
-    "static/js/main.a5b80d61.chunk.js"
+    "static/js/main.bab289ea.chunk.js"
   ]
 }
