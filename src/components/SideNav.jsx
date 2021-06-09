@@ -1,71 +1,156 @@
-import { useEffect, useState } from "react";
-import { Link, NavLink, useHistory, useParams } from "react-router-dom";
+import { useContext, useEffect, useRef, useState } from "react";
+import { Link, NavLink, useHistory } from "react-router-dom";
 import styled from "styled-components";
-import Context from "../context";
 import { Container } from "../styled/Container";
 
+import ActiveReadmeContext from "../contexts/ActiveReadmeContext";
+import ReadmesContext from "../contexts/ReadmesContext";
+
 const SideNav = () => {
-    const {name} = useParams(),
-        history = useHistory(),
-        [open, setOpen] = useState(window.innerWidth < 578);
+    const history = useHistory(),
+        [open, setOpen] = useState(window.innerWidth < 578),
+        menuRef = useRef();
 
-    const scrollTop = () => {
-        window.scroll({
-            top: document.querySelector('body').offsetTop - document.body.scrollTop,
-            behavior: 'smooth'
-        })
+    const toggleOpen = (state = !open) => {
+        setOpen(state);
+        if (state) {
+            document.querySelector('body').classList.add('o-hidden')
+        } else {
+            document.querySelector('body').classList.remove('o-hidden')
+        }
     }
-
-    const toggleOpen = (state = !open) => setOpen(state);
 
     useEffect(() => {
         setOpen(false);
     }, [history.location])
 
+    const click = (event) => {
+        const evaluate = (el) => {
+            if(!el || el === menuRef.current) {
+                return;
+            }
+            if(el?.tagName === "BODY" || el?.id === "root") {
+                setOpen(false);
+                return;
+            }
+            evaluate(el.parentElement)
+        }
+        evaluate(event.target);
+    }
+
+    useEffect(() => {
+        window.addEventListener('click', click)
+        return () => {
+            window.removeEventListener('click', click)
+        }
+    })
+
     return (
-        <Context.Consumer>
-            {({readmes}) => (
-                <>
-                    <StyledSideNav open={open}>
-                        <Container style={{margin: 0}}>
-                            <Brand as={Link} to={'/'}>
-                                <img src={`${process.env.PUBLIC_URL}/logo512.png`} alt="Readmes Icon" height="30" />
-                                <h1 style={{fontSize: '25px', marginLeft: 5}}>Readmes</h1>
-                            </Brand>
-                            <SideNavContainer>
-                                {readmes?.map((link, index) => (
-                                    <StyledLink
-                                        key={index}
-                                        className={name === link.name ? 'active' : ''}
-                                        to={`/r/${link.name}`}
-                                    >
-                                        {link.name}
-                                    </StyledLink>
-                                ))}
-                            </SideNavContainer>
-                        </Container>
-                        <SideNavButtonsContainer>
-                            <StyledButton as="a" href="https://github.com/Matias-Obezzi/readmes" target="_blank">
-                                <i className="far fa-star"></i>
-                                <span>Star</span>
-                            </StyledButton>
-                            <StyledButton onClick={scrollTop}>
-                                <i className="fas fa-arrow-up"></i>
-                                <span>Top</span>
-                            </StyledButton>
-                        </SideNavButtonsContainer>
-                    </StyledSideNav>
-                    <MenuButton onClick={() => toggleOpen()}>
-                        <i className="fas fa-bars"></i>
-                        {open}
-                    </MenuButton>
-                </>
-            )}
-        </Context.Consumer>
+        <div ref={menuRef}>
+            <StyledSideNav open={open}>
+                <Container style={{margin: 0}}>
+                    <Brand as={Link} to={'/'}>
+                        <img src={`${process.env.PUBLIC_URL}/logo512.png`} alt="Readmes Icon" height="30" />
+                        <h1 style={{fontSize: '25px', marginLeft: 5}}>Readmes</h1>
+                    </Brand>
+                    <MainSidebar closeMenu={() => toggleOpen(false)} />
+                </Container>
+                <BottomButtons toggleOpen={toggleOpen} />
+            </StyledSideNav>
+            <BarsMenuButton open={open} toggleOpen={toggleOpen} />
+        </div>
     )
 }
 
 export default SideNav;
+
+const MainSidebar = ({closeMenu}) => {
+    const { readmes, activeReadme, setActiveReadme } = useContext(ReadmesContext),
+        { links, activeLink } = useContext(ActiveReadmeContext),
+        readmeLinkRef = useRef();
+    
+    const linkClick = (index) => {
+        setActiveReadme(index);
+        closeMenu();
+    }
+
+    return (
+        <SideNavContainer>
+            {readmes?.map((link, index) => (
+                <StyledLinkContainer key={index}>
+                    <StyledLink
+                        ref={readmeLinkRef}
+                        key={index}
+                        to={`/r/${link.name}`}
+                        onClick={() => linkClick(index)}
+                    >
+                        <i
+                            className={`fas fa-chevron-${activeReadme == index ? 'down' : 'right'}`}
+                            style={{
+                                heigth: 15,
+                                width: 15,
+                                fontSize: '15px',
+                                marginRight: '5px'
+                            }}
+                        />
+                        {link.name}
+                    </StyledLink>
+                    {
+                        activeReadme === index && links?.map((sublink, index) => (
+                            <StyledSublink
+                                to={`/r/${link.name}/${sublink}`}
+                                key={index}
+                                className={activeLink === index ? 'active' :''}
+                                onClick={closeMenu}
+                            >
+                                {/* <i
+                                    className="fas fa-circle"
+                                    style={{
+                                        marginTop: '8px',
+                                        marginBottom: 'auto',
+                                        fontSize: '7px',
+                                        marginRight: '5px'
+                                    }}
+                                /> */}
+                                {sublink}
+                            </StyledSublink>
+                        ))
+                    }
+                </StyledLinkContainer>
+            ))}
+        </SideNavContainer>
+    )
+}
+
+const BottomButtons = ({toggleOpen}) => {
+    const scrollTop = () => {
+        window.scroll({
+            top: document.querySelector('body').offsetTop - document.body.scrollTop,
+            behavior: 'smooth'
+        })
+        toggleOpen(false)
+    }
+
+    return (
+        <SideNavButtonsContainer>
+            <StyledButton as="a" href="https://github.com/Matias-Obezzi/readmes" target="_blank">
+                <i className="far fa-star"></i>
+                <span>Star</span>
+            </StyledButton>
+            <StyledButton onClick={scrollTop}>
+                <i className="fas fa-arrow-up"></i>
+                <span>Top</span>
+            </StyledButton>
+        </SideNavButtonsContainer>
+    )
+}
+
+const BarsMenuButton = ({open, toggleOpen}) => (
+    <MenuButton onClick={() => toggleOpen()}>
+        <i className="fas fa-bars"></i>
+        {open}
+    </MenuButton>
+)
 
 const StyledSideNav = styled.div`
     display: flex;
@@ -76,9 +161,7 @@ const StyledSideNav = styled.div`
     left: 0;
     height: 100vh;
     background: rgb(245, 245, 245);
-    min-width: 15vw;
-    max-width: 20vw;
-    /* box-shadow: 0px 5px 10px rgba(0,0,0,0.2); */
+    width: 20vw;
     overflow: hidden;
     transition: 0.5s all;
     max-height: 100vh;
@@ -86,7 +169,7 @@ const StyledSideNav = styled.div`
     z-index: 2;
     @media(max-width: 576px){
         position: fixed;
-        max-width: 80vw;
+        width: 80vw;
         transform: translateX(${({open}) => open ? '0' : '-100%'});
         body {
             overflow: ${({open}) => open ? 'auto' : 'hidden'};;
@@ -97,7 +180,7 @@ SideNavContainer = styled.div`
     display: flex;
     flex-direction: column;
     position: sticky;
-    height: fit-content;
+    height: calc(100vh - 20px - 45px - 50px);
     padding: 0px 10px 0 0;
     margin: 5px 0;
     overflow-x: hidden;
@@ -130,11 +213,32 @@ SideNavContainer = styled.div`
         background: white;
     }
 `,
-StyledLink = styled(NavLink)`
+StyledLinkContainer = styled.div`
     text-decoration: none;
     width: 100%;
+    display: flex;
+    flex-direction: column;
     background: transparent;
     color: unset;
+    outline: 0;
+    /* border: 0.5px solid rgba(0,0,255,0.8); */
+    margin: 0 0 5px 0;
+    border-radius: 7px;
+    transition: 0.2s all;
+    box-sizing: border-box;
+    &:focus{
+        outline:0;
+    }
+    :last-child{
+        margin-bottom: 0;
+    }
+`,
+StyledLink = styled(NavLink)`
+    display: flex;
+    align-items: center;
+    text-decoration: none;
+    background: transparent;
+    color: #555;
     outline: 0;
     border: 0;
     padding: 5px 10px;
@@ -146,9 +250,46 @@ StyledLink = styled(NavLink)`
     &:focus{
         outline:0;
     }
-    &:hover, &.active{
+    &:hover{
+        padding-left: 15px;
+        padding-right: 5px;
+        color: #222;
+    }
+    &.active{
         background: rgba(0,0,255,0.8);
         color: white;
+    }
+    :last-child{
+        margin-bottom: 0;
+    }
+`,
+StyledSublink = styled(Link)`
+    display: flex;
+    align-items: center;
+    text-decoration: none;
+    background: transparent;
+    color: #222;
+    outline: 0;
+    border: 0;
+    padding: 5px 10px;
+    margin-left: 20px;
+    margin-bottom: 5px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: 0.2s all;
+    box-sizing: border-box;
+    /* overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis; */
+    &:focus{
+        outline:0;
+    }
+    &:hover{
+        padding-left: 15px;
+        padding-right: 5px;
+    }
+    &.active{
+        color: rgba(0,0,255,0.8);
     }
     :last-child{
         margin-bottom: 0;

@@ -1,32 +1,20 @@
 import ReactMarkdown from 'react-markdown'
-import { useEffect, useRef, useState } from "react"
+import React, { useContext, useEffect, useRef, useState } from "react"
 import styled from 'styled-components'
 
-import { Container, ContainerRow } from '../styled/Container'
+import { Container } from '../styled/Container'
 
 import * as apiService from '../apiService'
 import { useParams } from "react-router"
 import Loading from '../components/Loading'
+import ActiveReadmeContext from '../contexts/ActiveReadmeContext'
+import ReadmesContext from '../contexts/ReadmesContext'
 
 const Readme = () => {
-    const [markdown, setMarkdown] = useState(""),
-        [error, setError] = useState(""),
-        markdownRef = useRef(),
-        {name} = useParams();
-
-    useEffect(() => {
-        apiService.getReadme(name).then(res => {
-            res.text().then(setMarkdown)
-            setError("")
-        }).catch(err =>{
-            setMarkdown("")
-            setError(err.message)
-        })
-        document.title = "Readmes | " + name
-        return () => { 
-            document.title = "Readmes"
-        }
-    }, [name])
+    const markdownRef = useRef(),
+        { name, active } = useParams(),
+        { setLinks , setActiveLink } = useContext(ActiveReadmeContext),
+        [markdown, error] = GetMarkdown(name);
 
     const focusOn = (title) => {
         const scrollTo = (el) => (
@@ -44,13 +32,58 @@ const Readme = () => {
             })
         }
 
-        evaluateNodes(markdownRef.current.querySelectorAll("h1"));
         evaluateNodes(markdownRef.current.querySelectorAll("h2"));
     }
 
+    const scroll = () => {
+        const linkElements = []
+        markdownRef.current.querySelectorAll("h2").forEach(el => linkElements.push(el))
+        let enterOnScreenIndex = linkElements.reverse().findIndex((link) => window.scrollY + (window.innerHeight / 3) >= link.offsetTop)
+        let activeIndex = Math.max(linkElements.length - 1 - enterOnScreenIndex, 0)
+        setActiveLink(activeIndex >= linkElements.length ? 0 : activeIndex)
+    }
+    
+    const scrollTop = () => {
+        window.scroll({
+            top: document.querySelector('body').offsetTop - document.body.scrollTop,
+            behavior: 'smooth'
+        })
+    }
+
+    if(!active) {
+        scrollTop();
+    }
+
+    useEffect(() => {
+        focusOn(active)
+    }, [active])
+
+    useEffect(() => {
+        if(markdownRef.current) {
+            setLinks([])
+            const addId = (nodes) => {
+                nodes.forEach(el => {
+                    el.id = el.innerText
+                    setLinks(l => l.concat(el.innerText));
+                })
+            }
+            addId(markdownRef.current.querySelectorAll("h2"))
+        }
+        return () => {
+            setLinks([])
+        }
+    }, [markdown, markdownRef, setLinks])
+
+    useEffect(() => {
+        window.addEventListener('scroll', scroll)
+        return () => {
+            window.removeEventListener('scroll', scroll)
+        }
+    })
+    
+
     return (
         <Container>
-            {/* <LinkNavigator markdown={markdown} markdownRef={markdownRef} focusOn={focusOn} /> */}
             <StyledReactMarkdownContainer ref={markdownRef}>
                 {!error && !markdown ? 
                     <Loading/> :
@@ -60,8 +93,7 @@ const Readme = () => {
                                 transformImageUri={(url) => apiService.getMediaLink(name, url)}
                                 transformLinkUri={(url) => apiService.getUrlLink(name, url)}
                             >
-                                
-                                        {markdown}
+                                {`${markdown}`}
                             </StyledReactMarkdown>
                 }
             </StyledReactMarkdownContainer>
@@ -72,57 +104,32 @@ const Readme = () => {
 
 export default Readme;
 
-const LinkNavigator = ({markdown, markdownRef, focusOn}) => {
-    const [links, setLinks] = useState([]),
-        [active, setActive] = useState(null),
-        linkElements = []
+function GetMarkdown(name) {
+    const [markdown, setMarkdown] = useState(""),
+        [error, setError] = useState(""),
+        { readmes, setActiveReadme } = useContext(ReadmesContext);
     
-    const scroll = () => {
-        let enterOnScreenIndex = [...linkElements].reverse().findIndex((link) => window.scrollY + (window.innerWidth < 578 ? 50 : 10) >= link.offsetTop)
-        let activeIndex = Math.max(linkElements.length - 2 - enterOnScreenIndex, 0)
-        setActive(activeIndex >= linkElements.length -1 ? 0 : activeIndex)
-    }
-
     useEffect(() => {
-        if(markdownRef.current) {
-            setLinks([])
-            const addId = (nodes) => {
-                nodes.forEach(el => {
-                    setLinks(l => l.concat(el.innerText));
-                })
-            }
-            addId(markdownRef.current.querySelectorAll("h1"))
-            addId(markdownRef.current.querySelectorAll("h2"))
+        setActiveReadme(readmes.findIndex(readme => readme.name === name))
+        apiService.getReadme(name).then(res => {
+            res.text().then(setMarkdown)
+            setError("")
+        }).catch(err =>{
+            setMarkdown("")
+            setError(err.message)
+        })
+        document.title = "Readmes | " + name
+        return () => { 
+            document.title = "Readmes"
         }
-    }, [markdown, markdownRef])
+    }, [name, readmes, setActiveReadme])
 
-    useEffect(() => {
-        window.addEventListener('scroll', scroll)
-        return () => {
-            window.removeEventListener('scroll', scroll)
-        }
-    })
-
-    return(
-        <LinksCarrouselContainer>
-            <LinksCarrousel>
-                {
-                    links?.concat(links).map((link, index) => (
-                        <StyledLink onClick={() => focusOn(link)} key={index} active={index === active}>
-                            {link}
-                        </StyledLink>
-                    ))
-                }
-            </LinksCarrousel>
-        </LinksCarrouselContainer>
-    )
+    return [markdown, error]
 }
 
+
 const StyledReactMarkdownContainer = styled(Container)`
-    min-height: calc(100vh - 90px);
-    /* padding: 0 50px 20px 50px; */
     padding: 20px 50px;
-    box-shadow: 0px 1px 1px rgba(0,0,0,0.2);
 `,
 StyledReactMarkdown = styled(ReactMarkdown)`
     width: 100%;
@@ -156,8 +163,9 @@ StyledReactMarkdown = styled(ReactMarkdown)`
         color: #777777;
         font-size: 14px;
     }
-    h1, h2, h3, h4, h5, h6{
-        margin-bottom: 16px;
+    h1, h2{
+        padding-bottom: 5px;
+        margin-bottom: 15px;
     }
     p, blockquote, ul, ol, dl, li, table, pre {
         margin-top: 5px;
@@ -188,78 +196,5 @@ StyledReactMarkdown = styled(ReactMarkdown)`
     }
     :first-child{
         margin-top: 0;
-    }
-`,
-LinksCarrouselContainer = styled(Container)`
-    margin: 0 50px;
-    padding: 20px 0px 20px 0;
-    background: white;
-    position: sticky;
-    top:0px;
-    width: calc(100% - 100px);
-`,
-LinksCarrousel = styled(ContainerRow)`
-    width: 100%;
-    flex-wrap: nowrap;
-    flex-direction: row-reverse;
-    overflow: auto;
-    padding-bottom: 5px;
-    transform: rotate(180deg);
-
-    :last-child{
-       margin: 0;
-    }
-
-    ::-webkit-scrollbar,
-    ::-webkit-scrollbar-thumb,
-    ::-webkit-scrollbar-corner {
-        border-radius: 5px;
-        border-right-style: inset;
-        border-right-width: calc(100vw + 100vh);
-        border-color: inherit;
-    }
-
-    ::-webkit-scrollbar {
-        width: 0.5rem;
-        height: 0.5rem;
-    }
-
-    ::-webkit-scrollbar-thumb {
-        border-color: inherit;
-    }
-    ::-webkit-scrollbar-track-piece {
-        background: white;
-    }
-`,
-StyledLink = styled.button`
-    transform: rotate(180deg);
-    text-decoration: none;
-    min-width: 30%;
-    background: ${({active}) => active ? 'rgba(0,0,255,0.8)' : 'transparent '};
-    color: ${({active}) => active ? 'white' : 'unset '};
-    outline: 0;
-    border: 0;
-    padding: 5px 10px;
-    margin-right: 10px;
-    border-radius: 5px;
-    cursor: pointer;
-    transition: 0.2s all;
-    box-sizing: border-box;
-    max-height: 50px;
-    font: unset;
-    text-align:center;
-    &:hover{
-        background: rgba(0,0,255,0.8);
-        color: white;
-    }
-    &:focus{
-        outline:0;
-    }
-    &:hover, &.active{
-        background: rgba(0,0,255,0.8);
-        color: white;
-    }
-    :last-child{
-        margin-right: 0;
     }
 `

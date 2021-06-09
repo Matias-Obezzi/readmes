@@ -9,7 +9,7 @@ const Router = (props) => {
             <Route exact path="/">
                 <Home {...props} />
             </Route>
-            <Route path="/r/:name">
+            <Route path={["/r/:name/:active", "/r/:name"]}>
                 <Readme {...props} />
             </Route>
         </Switch>

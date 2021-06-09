@@ -43,7 +43,7 @@ export const getMediaLink = (dirName, mediaName) => {
         throw new Error("Se necesita el nombre de la carpeta")
     if(!mediaName)
         throw new Error("Se necesita un nombre para el archivo")
-    if(!validExtension.includes(mediaName.split(".").slice(-1)[0]))
+    if(!validExtension.some(el => el === mediaName.split(".").slice(-1)[0]))
         throw new Error("Asegurate de pasar el nombre del archivo incluyendo la extension")
     return `https://raw.githubusercontent.com/Matias-Obezzi/readmes/readmes/${dirName}/${mediaName}`
 }
