@@ -14,6 +14,7 @@ const Readme = () => {
     const markdownRef = useRef(),
         { name, active } = useParams(),
         { setLinks , setActiveLink } = useContext(ActiveReadmeContext),
+        { setActiveReadme, activeReadme, readmes } = useContext(ReadmesContext),
         [markdown, error] = GetMarkdown(name);
 
     const focusOn = (title) => {
@@ -49,13 +50,20 @@ const Readme = () => {
             behavior: 'smooth'
         })
     }
-
-    if(!active) {
-        scrollTop();
-    }
+    
+    useEffect(() => {
+        setActiveReadme(readmes.findIndex(readme => readme.name === name))   
+        return () => {
+            setActiveReadme(null)
+        }
+    }, [activeReadme])
 
     useEffect(() => {
-        focusOn(active)
+        if(!active){
+            scrollTop();
+        } else {
+          focusOn(active)
+        }
     }, [active])
 
     useEffect(() => {
@@ -72,7 +80,7 @@ const Readme = () => {
         return () => {
             setLinks([])
         }
-    }, [markdown, markdownRef, setLinks])
+    }, [markdown, markdownRef, setLinks, setActiveReadme])
 
     useEffect(() => {
         window.addEventListener('scroll', scroll)

@@ -65,14 +65,9 @@ const SideNav = () => {
 export default SideNav;
 
 const MainSidebar = ({closeMenu}) => {
-    const { readmes, activeReadme, setActiveReadme } = useContext(ReadmesContext),
+    const { readmes, activeReadme } = useContext(ReadmesContext),
         { links, activeLink } = useContext(ActiveReadmeContext),
         readmeLinkRef = useRef();
-    
-    const linkClick = (index) => {
-        setActiveReadme(index);
-        closeMenu();
-    }
 
     return (
         <SideNavContainer>
@@ -82,10 +77,10 @@ const MainSidebar = ({closeMenu}) => {
                         ref={readmeLinkRef}
                         key={index}
                         to={`/r/${link.name}`}
-                        onClick={() => linkClick(index)}
+                        onClick={closeMenu}
                     >
                         <i
-                            className={`fas fa-chevron-${activeReadme == index ? 'down' : 'right'}`}
+                            className={`fas fa-chevron-${activeReadme === index ? 'down' : 'right'}`}
                             style={{
                                 heigth: 15,
                                 width: 15,
@@ -103,15 +98,6 @@ const MainSidebar = ({closeMenu}) => {
                                 className={activeLink === index ? 'active' :''}
                                 onClick={closeMenu}
                             >
-                                {/* <i
-                                    className="fas fa-circle"
-                                    style={{
-                                        marginTop: '8px',
-                                        marginBottom: 'auto',
-                                        fontSize: '7px',
-                                        marginRight: '5px'
-                                    }}
-                                /> */}
                                 {sublink}
                             </StyledSublink>
                         ))
