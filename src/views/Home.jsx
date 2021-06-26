@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 
 import * as apiService from '../apiService'
+import ErrorHandler from "../components/ErrorHandler";
 import Loading from "../components/Loading";
 import { Card, CardTitle, CardColumns } from "../styled/Card";
 import { Container } from "../styled/Container";
@@ -10,18 +11,15 @@ const Home = (props) => {
 
     return(
         <Container>
-            {!error && !readmes ? 
-                <Loading />
-                : error ? 
-                    <>{error}</>
-                    : <CardColumns>
-                        {readmes.map(readme => (
-                            <Card key={readme.name} to={`/r/${readme.name}`}>
-                                <CardTitle>{readme.name}</CardTitle>
-                            </Card>
-                        ))}
-                    </CardColumns>
-            }
+            <ErrorHandler error={error} data={readmes} >
+                <CardColumns>
+                    {readmes?.map(readme => (
+                        <Card key={readme.name} to={`/r/${readme.name}`}>
+                            <CardTitle>{readme.name}</CardTitle>
+                        </Card>
+                    ))}
+                </CardColumns>
+            </ErrorHandler>
         </Container>
     )
 }

@@ -15,6 +15,9 @@ import Loading from '../components/Loading'
 import { StyledReadmeNavbarButton, StyledRedmeNavbar } from "../styled/StyledReadmeNavbar"
 import { useHistory } from "react-router-dom"
 
+// Components
+import ErrorHandler from "../components/ErrorHandler"
+
 const Readme = () => {
     const { name } = useParams(),
         { setActiveReadme, activeReadme, readmes } = useContext(ReadmesContext),
@@ -31,7 +34,7 @@ const Readme = () => {
     return (
         <Container>
             <ErrorHandler error={error} data={!!markdown}>
-                <ReadmeNavbar title={name} />
+                <ReadmeNavbar />
                 <ReadmeContainer markdown={markdown} name={name}/>
             </ErrorHandler>
         </Container>
@@ -39,12 +42,6 @@ const Readme = () => {
 }
 
 export default Readme;
-
-const ErrorHandler = ({error, data, children}) => {
-    if(!error && !data) return <Loading />
-    else if (error) return <p>{error}</p>
-    return children;
-}
 
 const useGetMarkdown = (name) => {
     const [markdown, setMarkdown] = useState(""),
@@ -69,20 +66,8 @@ const useGetMarkdown = (name) => {
 }
 
 
-const ReadmeNavbar = ({title}) => {
-    const history = useHistory(),
-        [scrolled, setScrolled] = useState(false);
-
-    useEffect(() => {
-        const evaluateScroll = () => {
-            setScrolled(window.scrollY > 0)
-        }
-
-        window.addEventListener('scroll', evaluateScroll);
-        return () => {
-            window.removeEventListener('scroll', evaluateScroll)
-        }
-    })
+const ReadmeNavbar = () => {
+    const history = useHistory();
 
     const back = () => {
         history.goBack();

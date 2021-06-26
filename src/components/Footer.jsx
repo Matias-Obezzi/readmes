@@ -48,6 +48,7 @@ export default Footer;
 
 const StyledFooter = styled(ContainerRow)`
     display: flex;
+    flex-direction: row;
     padding: 20px 10px 20px 10px;
     @media(max-width: 576px){
         flex-direction: column;
@@ -109,7 +110,6 @@ PageInfo = styled(Col)`
         animation: ${beat} infinite 1s linear;
     }
     @media(max-width: 576px){
-        flex-direction: row;
         justify-content: center;
         text-align: center;
         margin-bottom: 10px;
