@@ -2,7 +2,6 @@ import { useEffect, useState } from "react";
 
 import * as apiService from '../apiService'
 import ErrorHandler from "../components/ErrorHandler";
-import Loading from "../components/Loading";
 import { Card, CardTitle, CardColumns } from "../styled/Card";
 import { Container } from "../styled/Container";
 

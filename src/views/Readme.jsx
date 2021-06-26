@@ -11,8 +11,7 @@ import * as apiService from '../apiService'
 // Styles
 import { Container } from '../styled/Container'
 import { StyledReactMarkdownContainer, StyledReactMarkdown } from '../styled/StyledReactMarkdown'
-import Loading from '../components/Loading'
-import { StyledReadmeNavbarButton, StyledRedmeNavbar } from "../styled/StyledReadmeNavbar"
+import { StyledReadmeNavbarButton } from "../styled/StyledReadmeNavbar"
 import { useHistory } from "react-router-dom"
 
 // Components
