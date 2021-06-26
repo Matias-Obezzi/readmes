@@ -1,18 +1,18 @@
 {
   "files": {
-    "main.css": "/readmes/static/css/main.6221c9d5.chunk.css",
-    "main.js": "/readmes/static/js/main.cce88218.chunk.js",
+    "main.css": "/readmes/static/css/main.e4dc8739.chunk.css",
+    "main.js": "/readmes/static/js/main.7ee2632e.chunk.js",
     "runtime-main.js": "/readmes/static/js/runtime-main.dc9eb953.js",
-    "static/js/2.dd47b179.chunk.js": "/readmes/static/js/2.dd47b179.chunk.js",
+    "static/js/2.45b63fdf.chunk.js": "/readmes/static/js/2.45b63fdf.chunk.js",
     "static/js/3.856769b4.chunk.js": "/readmes/static/js/3.856769b4.chunk.js",
     "index.html": "/readmes/index.html",
     "service-worker.js": "/readmes/service-worker.js",
-    "static/js/2.dd47b179.chunk.js.LICENSE.txt": "/readmes/static/js/2.dd47b179.chunk.js.LICENSE.txt"
+    "static/js/2.45b63fdf.chunk.js.LICENSE.txt": "/readmes/static/js/2.45b63fdf.chunk.js.LICENSE.txt"
   },
   "entrypoints": [
     "static/js/runtime-main.dc9eb953.js",
-    "static/js/2.dd47b179.chunk.js",
-    "static/css/main.6221c9d5.chunk.css",
-    "static/js/main.cce88218.chunk.js"
+    "static/js/2.45b63fdf.chunk.js",
+    "static/css/main.e4dc8739.chunk.css",
+    "static/js/main.7ee2632e.chunk.js"
   ]
 }
