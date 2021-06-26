@@ -15,7 +15,7 @@ const Footer = () => {
             href: 'https://github.com/Matias-Obezzi',
             color: '#f6f8fa',
             background: '#24292e',
-            title: 'LinkedIn - Matias Obezzi'
+            title: 'GitHub - Matias Obezzi'
         },
         {
             icon: 'fas fa-globe-americas',

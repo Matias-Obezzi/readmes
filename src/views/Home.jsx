@@ -6,22 +6,7 @@ import { Card, CardTitle, CardColumns } from "../styled/Card";
 import { Container } from "../styled/Container";
 
 const Home = (props) => {
-    const [readmes, setReadmes] = useState(null),
-        [error, setError] = useState("")
-
-    useEffect(() => {
-        apiService.getReadmes().then(res => {
-            setReadmes(res)
-            setError("")
-        }).catch(err =>{
-            setReadmes(null)
-            setError(err.message)
-        })
-        document.title = "Readmes | Inicio"
-        return () => { 
-            document.title = "Readmes"
-        }
-    }, [])
+    const [readmes, error] = useGetReadmes(); 
 
     return(
         <Container>
@@ -42,3 +27,24 @@ const Home = (props) => {
 }
 
 export default Home;
+
+const useGetReadmes = () => {
+    const [readmes, setReadmes] = useState(null),
+        [error, setError] = useState("");
+        
+    useEffect(() => {
+        apiService.getReadmes().then(res => {
+            setReadmes(res)
+            setError("")
+        }).catch(err =>{
+            setReadmes(null)
+            setError(err.message)
+        })
+        document.title = "Readmes | Inicio"
+        return () => { 
+            document.title = "Readmes"
+        }
+    }, [])
+
+    return [readmes, error];
+}

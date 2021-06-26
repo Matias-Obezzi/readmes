@@ -46,7 +46,7 @@ const SideNav = () => {
     })
 
     return (
-        <div ref={menuRef}>
+        <div ref={menuRef} style={{zIndex: 2}}>
             <StyledSideNav open={open}>
                 <Container style={{margin: 0}}>
                     <Brand as={Link} to={'/'}>
@@ -65,33 +65,73 @@ const SideNav = () => {
 export default SideNav;
 
 const MainSidebar = ({closeMenu}) => {
-    const { readmes, activeReadme } = useContext(ReadmesContext),
-        { links, activeLink } = useContext(ActiveReadmeContext),
-        readmeLinkRef = useRef();
+    const { readmes } = useContext(ReadmesContext);
 
     return (
         <SideNavContainer>
             {readmes?.map((link, index) => (
-                <StyledLinkContainer key={index}>
-                    <StyledLink
-                        ref={readmeLinkRef}
-                        key={index}
-                        to={`/r/${link.name}`}
-                        onClick={closeMenu}
-                    >
-                        <i
-                            className={`fas fa-chevron-${activeReadme === index ? 'down' : 'right'}`}
-                            style={{
-                                heigth: 15,
-                                width: 15,
-                                fontSize: '15px',
-                                marginRight: '5px'
-                            }}
-                        />
-                        {link.name}
-                    </StyledLink>
-                    {
-                        activeReadme === index && links?.map((sublink, index) => (
+                <SideNavLink key={index} link={link} index={index} closeMenu={closeMenu} /> 
+            ))}
+        </SideNavContainer>
+    )
+}
+
+const SideNavLink = ({link, index, closeMenu}) => {
+    const readmeLinkRef = useRef(),
+        { activeReadme } = useContext(ReadmesContext),
+        { links, activeLink } = useContext(ActiveReadmeContext),
+        [showLinks, setShowLinks] = useState(true),
+        active = activeReadme === index,
+        open = active && showLinks;
+
+    console.log(showLinks, active)
+
+    const linkClick = () =>{
+        closeMenu();
+        if(activeReadme === index){
+            setShowLinks(!showLinks)
+        }
+    }
+
+    useEffect(() => {
+        if(activeReadme === index){
+            setShowLinks(true)
+        }
+    }, [activeReadme, index])
+
+    return (
+        <StyledLinkContainer key={index}>
+            <StyledLink
+                ref={readmeLinkRef}
+                key={index}
+                to={`/r/${link.name}`}
+                onClick={linkClick}
+            >
+                <i
+                    className={`fas fa-chevron-right`}
+                    style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        heigth: 15,
+                        width: 15,
+                        fontSize: '15px',
+                        marginRight: '5px',
+                        transition: '0.2s all',
+                        transform: `rotate(${open ? '90deg' : '0'})`
+                    }}
+                />
+                {link.name}
+            </StyledLink>
+            {
+                !active ?
+                    null :
+                    <div style={{
+                        transition: '0.2s all',
+                        maxHeight: open ? '100vh' : '0vh',
+                        overflow: 'hidden'
+                    }}>
+                        {links?.map((sublink, index) => (
                             <StyledSublink
                                 to={`/r/${link.name}/${sublink}`}
                                 key={index}
@@ -100,11 +140,10 @@ const MainSidebar = ({closeMenu}) => {
                             >
                                 {sublink}
                             </StyledSublink>
-                        ))
-                    }
-                </StyledLinkContainer>
-            ))}
-        </SideNavContainer>
+                        ))}
+                    </div>
+            }
+        </StyledLinkContainer>
     )
 }
 
@@ -221,6 +260,7 @@ StyledLinkContainer = styled.div`
 `,
 StyledLink = styled(NavLink)`
     display: flex;
+    vertical-align: center;
     align-items: center;
     text-decoration: none;
     background: transparent;
@@ -343,8 +383,8 @@ MenuButton = styled.button`
     font-size: 25px;
     cursor: pointer;
     border-radius: 50%;
-    height: 30px;
-    width: 30px;
+    height: 32px;
+    width: 32px;
     align-items: center;
     justify-content: center;
     @media(max-width: 578px){
