@@ -3,7 +3,7 @@ import styled from "styled-components";
 import { Container } from "../styled/Container";
 
 export const StyledReactMarkdownContainer = styled(Container)`
-    padding: 0 50px 20px 50px;
+    padding: 20px 50px 20px 50px;
 `,
 StyledReactMarkdown = styled(ReactMarkdown)`
     width: 100%;

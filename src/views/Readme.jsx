@@ -89,13 +89,10 @@ const ReadmeNavbar = ({title}) => {
     }
     
     return (
-        <StyledRedmeNavbar shadow={scrolled}>
-            <StyledReadmeNavbarButton
-                className="fas fa-arrow-left"
-                onClick={back}
-            />
-            <h2>{title}</h2>
-        </StyledRedmeNavbar>
+        <StyledReadmeNavbarButton
+            className="fas fa-arrow-left"
+            onClick={back}
+        />
     )
 }
 
@@ -131,7 +128,7 @@ const useOnMarkdownRefLoadHandler = (markdownRef, markdown) => {
                 })
             }
             addId(markdownRef.current.querySelectorAll("h2"))
-            markdownRef.current.querySelector("h1")?.remove()
+            // markdownRef.current.querySelector("h1")?.remove()
         }
         return () => {
             setLinks([])

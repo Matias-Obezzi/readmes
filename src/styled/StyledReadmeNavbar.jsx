@@ -22,7 +22,8 @@ StyledReadmeNavbarButton = styled.button`
     padding: 5px;
     height: 35px;
     width: 35px;
-    margin: 0px 7.5px 0px 7.5px;
+    position: fixed;
+    top: 20px;
     background: var(--background-color);
     color: var(--text-color);
     border-radius: 50%;
@@ -31,5 +32,10 @@ StyledReadmeNavbarButton = styled.button`
     :hover{
         transform: scale(0.9);
         background: #f5f5f5;
+    }
+    margin-left: 10px;
+    @media(max-width: 578px){
+        margin-left: 0;
+        left: 10px;
     }
 `
