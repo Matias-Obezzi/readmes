@@ -78,19 +78,25 @@ const MainSidebar = ({closeMenu}) => {
 
 const SideNavLink = ({link, index, closeMenu}) => {
     const readmeLinkRef = useRef(),
+        history = useHistory(),
         { activeReadme } = useContext(ReadmesContext),
         { links, activeLink } = useContext(ActiveReadmeContext),
         [showLinks, setShowLinks] = useState(true),
         active = activeReadme === index,
         open = active && showLinks;
 
-    console.log(showLinks, active)
-
-    const linkClick = () =>{
-        closeMenu();
+    const linkClick = (path) => {
         if(activeReadme === index){
             setShowLinks(!showLinks)
+        }else{
+            closeMenu();
+            history.push(path)
         }
+    }
+
+    const sublinkClick = (path) => {
+        closeMenu()
+        history.replace(path)
     }
 
     useEffect(() => {
@@ -102,10 +108,12 @@ const SideNavLink = ({link, index, closeMenu}) => {
     return (
         <StyledLinkContainer key={index}>
             <StyledLink
+                as="button"
                 ref={readmeLinkRef}
                 key={index}
-                to={`/r/${link.name}`}
-                onClick={linkClick}
+                // to={`/r/${link.name}`}
+                className={active?'active':''}
+                onClick={() => linkClick(`/r/${link.name}`)}
             >
                 <i
                     className={`fas fa-chevron-right`}
@@ -133,10 +141,11 @@ const SideNavLink = ({link, index, closeMenu}) => {
                     }}>
                         {links?.map((sublink, index) => (
                             <StyledSublink
-                                to={`/r/${link.name}/${sublink}`}
+                                as="button"
+                                // to={`/r/${link.name}/${sublink}`}
                                 key={index}
                                 className={activeLink === index ? 'active' :''}
-                                onClick={closeMenu}
+                                onClick={() => sublinkClick(`/r/${link.name}/${sublink}`)}
                             >
                                 {sublink}
                             </StyledSublink>
@@ -292,6 +301,8 @@ StyledLink = styled(NavLink)`
 StyledSublink = styled(Link)`
     display: flex;
     align-items: center;
+    justify-content: start;
+    text-align: left;
     text-decoration: none;
     background: transparent;
     color: #222;
